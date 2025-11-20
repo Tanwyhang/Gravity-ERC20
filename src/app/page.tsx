@@ -48,9 +48,9 @@ export default function Home() {
             
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <button className="bg-foreground text-background px-8 py-3 text-sm font-bold hover:bg-foreground/90 transition-colors">
+              <a href="/create" className="bg-foreground text-background px-8 py-3 text-sm font-bold hover:bg-foreground/90 transition-colors inline-block text-center">
                 [ CREATE ]
-              </button>
+              </a>
               <button className="border border-border px-8 py-3 text-sm font-bold hover:bg-muted/50 transition-colors">
                 [ WHITEPAPER ]
               </button>
@@ -87,16 +87,16 @@ export default function Home() {
             {/* Payment Modal Mockups */}
             <h4 className="text-sm font-mono text-muted-foreground mb-8 tracking-widest uppercase mt-12">[ PAYMENT_MODALS ]</h4>
             <div className="grid md:grid-cols-2 gap-24 w-full max-w-4xl mx-auto mb-12 z-20 mt-6 relative">
-              {/* Modal 1: ETH Payment */}
+              {/* Modal 1: USD Payment */}
               <div className="relative rounded-xl border border-border bg-card/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 group">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-purple-500/10 pointer-events-none rounded-xl" />
-                
+
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
                       <div className="w-4 h-4 rounded-full bg-blue-500" />
                     </div>
-                    <span className="font-bold text-sm">PAY_WITH_ETH</span>
+                    <span className="font-bold text-sm">PAY_WITH_CRYPTO</span>
                   </div>
                   <div className="text-xs text-muted-foreground font-mono">ID: #8X92...</div>
                 </div>
@@ -109,7 +109,7 @@ export default function Home() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm p-3 rounded bg-muted/30 border border-border/50">
                     <span className="text-muted-foreground">Network Cost</span>
-                    <span className="font-mono text-xs">0.002 ETH</span>
+                    <span className="font-mono text-xs">~$2.50</span>
                   </div>
                   <div className="flex justify-between text-sm p-3 rounded bg-muted/30 border border-border/50">
                     <span className="text-muted-foreground">Processing Time</span>
@@ -126,7 +126,7 @@ export default function Home() {
               {/* Modal 2: MNEE Payment */}
               <div className="relative rounded-xl border border-border bg-card/90 backdrop-blur-xl p-6 shadow-2xl transition-all duration-500 hover:scale-105 hover:-translate-y-2 group delay-100">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-blue-500/10 pointer-events-none rounded-xl" />
-                
+
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -145,7 +145,7 @@ export default function Home() {
                 <div className="space-y-3 mb-6">
                   <div className="flex justify-between text-sm p-3 rounded bg-muted/30 border border-border/50">
                     <span className="text-muted-foreground">Network Cost</span>
-                    <span className="font-mono text-xs">0.00 MNEE</span>
+                    <span className="font-mono text-xs">$0.00</span>
                   </div>
                   <div className="flex justify-between text-sm p-3 rounded bg-muted/30 border border-border/50">
                     <span className="text-muted-foreground">Processing Time</span>

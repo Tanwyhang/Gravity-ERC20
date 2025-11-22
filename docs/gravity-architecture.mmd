@@ -1,0 +1,90 @@
+flowchart TD
+    %% --- External Actors ---
+    subgraph External["External Actors"]
+        Payer[("👤 Payer Wallet")]
+        Recipient[("👤 Recipient Wallet")]
+        Analytics[("📊 Analytics / Indexer")]
+    end
+
+    %% --- Off-chain Layer ---
+    subgraph OffChain["Off-chain Layer (GravitySWAP.ts)"]
+        Client["GravitySWAP Client"]
+        Env["Configuration (.env)"]
+        BFS["BFS Route Discovery"]
+        Quote["Quote & Slippage Calc"]
+    end
+
+    %% --- Protocol Layer ---
+    subgraph Protocol["Gravity Protocol (On-chain)"]
+        Pay["GravityPayment.sol"]
+        Router["TokenRouter.sol"]
+        Hook["MNEESwapHook.sol"]
+        
+        subgraph Storage["Contract Storage"]
+            Registry[("Token Registry")]
+            Adjacency[("Adjacency List")]
+            Payments[("Payment Receipts")]
+        end
+    end
+
+    %% --- Infrastructure Layer ---
+    subgraph Uniswap["Uniswap v4 Infrastructure"]
+        PoolMgr["PoolManager"]
+        SwapTest["PoolSwapTest"]
+        Pools[("Liquidity Pools")]
+    end
+
+    %% --- Flows ---
+
+    %% Configuration
+    Env -->|"RPC_URL, Keys, Addrs"| Client
+
+    %% Discovery Phase
+    Payer -->|"1. Request Payment"| Client
+    Client -->|"2. getNeighbors()"| Router
+    Router -.->|"Read"| Adjacency
+    Client -->|"3. Run BFS"| BFS
+    BFS -->|"Candidate Paths"| Quote
+    Quote -->|"4. calculateExpectedOutput()"| Router
+    Router -.->|"Simulate Swap"| Registry
+    Quote -->|"5. Select Best Path + minMNEEOut"| Client
+
+    %% Execution Phase
+    Client -->|"6. Approve TokenIn"| Payer
+    Payer -->|"7. tx: approve(GravityPayment)"| Pay
+    Client -->|"8. tx: pay(eventId, tokenIn, amount, recipient, minMNEEOut, path)"| Pay
+    
+    %% Validation & Fees
+    Pay -->|"9. validatePath(path)"| Router
+    Pay -->|"10. pullFunds()"| Payer
+    Pay -->|"11. Deduct Protocol Fee"| Pay
+    
+    %% Multi-Hop Swap Block (Replaces Loops)
+    subgraph SwapProcess["Multi-Hop Swap (Iterative)"]
+        startSwap[Start Multi-Hop]
+        check[Check Token & Loop Hops]
+        executeSwap[Execute Swap]
+        enforce[Enforce Slippage]
+    end
+
+    Pay -->|"12. multihopSwap(path, amount)"| startSwap
+    
+    startSwap -->|"13. Check allowedTokens"| check
+    check -->|"14. Loop Hops"| executeSwap
+    executeSwap -->|"15. swap()"| PoolMgr
+    PoolMgr -->|"16. Access Liquidity"| Pools
+    Pools -->|"17. Return Delta"| PoolMgr
+    PoolMgr -->|"18. Return Output"| SwapTest
+    SwapTest -->|"19. Return Output"| enforce
+    
+    enforce -->|"20. Enforce Hop Slippage"| endSwap[End Multi-Hop]
+
+    endSwap -->|"21. Return Final MNEE"| Pay
+
+    %% Settlement
+    Pay -->|"22. Transfer MNEE"| Recipient
+    Pay -.->|"Write"| Payments
+
+    %% Telemetry
+    Pay -->|"Event: PaymentMade"| Analytics
+    Hook -->|"Event: TokenSwap (via Hook)"| Analytics

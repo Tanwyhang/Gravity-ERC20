@@ -1,0 +1,45 @@
+flowchart TD
+    %% --- Actors ---
+    User(("👤 User / DApp"))
+    Recipient(("💰 Recipient"))
+
+    %% --- System Components ---
+    subgraph OffChain ["Gravity Client SDK (TypeScript)"]
+        Discovery["Route Discovery (BFS) & Quoting"]
+    end
+
+    subgraph OnChain ["Gravity Protocol (Solidity)"]
+        Payment["Payment Orchestrator\n(GravityPayment.sol)"]
+        Router["Routing Logic\n(TokenRouter.sol)"]
+    end
+
+    subgraph DeFi ["Liquidity Layer (Uniswap v4)"]
+        UniV4["Liquidity Pools & Hooks\n(PoolManager)"]
+    end
+
+    %% --- High Level Flow ---
+    
+    %% 1. Intent
+    User -->|"1. Request Payment"| Discovery
+    
+    %% 2. Intelligence
+    Discovery <-->|"2. Query Liquidity & Paths"| Router
+    Discovery -->|"3. Optimal Path"| User
+    
+    %% 3. Execution
+    User -->|"4. Execute Payment"| Payment
+    
+    %% 4. Settlement Logic
+    Payment -->|"5. Validate & Swap"| Router
+    Router <-->|"6. Atomic Swaps"| UniV4
+    
+    %% 5. Finality
+    Payment -->|"7. Transfer Stablecoin"| Recipient
+    
+    %% Styling
+    classDef actor fill:#f9f,stroke:#333,stroke-width:2px;
+    classDef component fill:#e1f5fe,stroke:#01579b,stroke-width:2px;
+    classDef protocol fill:#fff3e0,stroke:#ff6f00,stroke-width:2px;
+    
+    class User,Recipient actor;
+    class Discovery,Payment,Router,UniV4 component;

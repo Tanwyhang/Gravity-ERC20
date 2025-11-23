@@ -1,9 +1,13 @@
+"use client";
+
 import { Terminal, CreditCard, QrCode, Zap } from "lucide-react"
 import { TokenETH, TokenUNI, TokenARB, TokenUSDC, TokenUSDT, TokenDAI } from "@web3icons/react"
 import Image from "next/image"
+import Link from "next/link"
 import { AuroraBackground } from "@/components/ui/shadcn-io/aurora-background"
 import { QrScanAnimation } from "@/components/QrScanAnimation"
 import { LaptopClickAnimation } from "@/components/LaptopClickAnimation"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 
 export default function Home() {
   return (
@@ -20,8 +24,11 @@ export default function Home() {
             <a href="#features" className="hover:underline decoration-2 underline-offset-4">./features</a>
             <a href="#testimonials" className="hover:underline decoration-2 underline-offset-4">./testimonials</a>
           </nav>
-          <div className="text-xs text-muted-foreground hidden sm:block">
-            v1.0.0-beta
+          <div className="flex items-center gap-4">
+            <ConnectButton />
+            <div className="text-xs text-muted-foreground hidden sm:block">
+              v1.0.0-beta
+            </div>
           </div>
         </div>
       </header>
@@ -48,9 +55,9 @@ export default function Home() {
             
 
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
-              <a href="/create" className="bg-foreground text-background px-8 py-3 text-sm font-bold hover:bg-foreground/90 transition-colors inline-block text-center">
+              <Link href="/create" className="bg-foreground text-background px-8 py-3 text-sm font-bold hover:bg-foreground/90 transition-colors inline-block text-center">
                 [ CREATE ]
-              </a>
+              </Link>
               <button className="border border-border px-8 py-3 text-sm font-bold hover:bg-muted/50 transition-colors">
                 [ WHITEPAPER ]
               </button>
@@ -117,7 +124,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button className="w-full bg-foreground text-background py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                <button className="w-full bg-foreground text-background py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-not-allowed opacity-50">
                   CONFIRM_PAYMENT
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 </button>
@@ -153,7 +160,7 @@ export default function Home() {
                   </div>
                 </div>
 
-                <button className="w-full bg-foreground text-background py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+                <button className="w-full bg-foreground text-background py-3 rounded-lg font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2 cursor-not-allowed opacity-50">
                   CONFIRM_PAYMENT
                   <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                 </button>

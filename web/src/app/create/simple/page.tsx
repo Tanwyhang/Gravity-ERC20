@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label"
 import { QRDownload } from "@/components/ui/qr-download"
 import { toast } from "sonner"
 import Link from "next/link"
+import { Button } from "@/components/ui/button"
 
 interface PaymentConfig {
   template: 'simple'
@@ -32,7 +33,6 @@ interface PaymentConfig {
   showProcessingTime: boolean
   buttonStyle: 'solid' | 'gradient' | 'outline' | 'glow'
   animation: 'none' | 'pulse' | 'bounce' | 'glow'
-  oneTimeVerify: boolean
   showQRCode: boolean
 }
 
@@ -41,6 +41,7 @@ export default function SimplePage() {
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [transactionHash, setTransactionHash] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null)
   const qrCodeRef = useRef<HTMLDivElement>(null)
 
   const [config, setConfig] = useState<PaymentConfig>({
@@ -64,7 +65,6 @@ export default function SimplePage() {
     showProcessingTime: true,
     buttonStyle: 'solid',
     animation: 'pulse',
-    oneTimeVerify: false,
     showQRCode: true,
   })
 
@@ -140,6 +140,33 @@ export default function SimplePage() {
       }, 2000)
     }
   }, [isProcessing])
+
+  const handleGenerateLink = useCallback(() => {
+    const uniqueId = Math.random().toString(36).substring(2, 9)
+    const params = new URLSearchParams({
+      primaryColor: config.primaryColor,
+      backgroundColor: config.backgroundColor,
+      textColor: config.textColor,
+      borderColor: config.borderColor,
+      borderRadius: config.borderRadius.toString(),
+      buttonStyle: config.buttonStyle,
+      tokenSymbol: config.tokenSymbol,
+      tokenAmount: config.tokenAmount,
+      merchantName: config.merchantName,
+      transactionId: config.transactionId,
+      customTitle: config.customTitle,
+      recipientAddress: config.recipientAddress,
+      showTransactionId: config.showTransactionId.toString(),
+      animation: config.animation,
+      // customThumbnail might be too large for URL if it's base64, but for now we include it if present
+      // Ideally this should be uploaded and a URL passed, but for this demo we'll try
+    })
+    // Simple template doesn't have customThumbnail
+
+    const link = `${window.location.origin}/pay/${uniqueId}?${params.toString()}`
+    setGeneratedLink(link)
+    toast.success("Payment link generated!")
+  }, [config])
 
   const PaymentModalPreview = useMemo(() => {
     const getButtonStyle = () => {
@@ -529,24 +556,15 @@ export default function SimplePage() {
                           onCheckedChange={(checked) => updateConfig('showQRCode', checked)}
                         />
                       </div>
-                      <div className="flex items-center justify-between gap-4 p-4">
-                        <div className="flex flex-col gap-1">
-                          <Label className="font-medium" htmlFor="oneTimeVerify">
-                            ONE_TIME_VERIFICATION
-                          </Label>
-                          <p className="text-muted-foreground text-xs">
-                            QR code becomes invalid after first scan
-                          </p>
-                        </div>
-                        <Switch
-                          id="oneTimeVerify"
-                          checked={config.oneTimeVerify}
-                          onCheckedChange={(checked) => updateConfig('oneTimeVerify', checked)}
-                        />
                       </div>
                     </div>
-                  </div>
 
+              <Button 
+                className="w-full py-6 text-lg font-bold mt-6 shadow-xl hover:scale-[1.02] transition-transform"
+                onClick={handleGenerateLink}
+              >
+                GENERATE_LINK
+              </Button>
               </div>
 
                 <div className="space-y-4 sm:space-y-6">
@@ -610,14 +628,9 @@ export default function SimplePage() {
                     <div className="flex justify-center mb-4 animate-in fade-in duration-500 delay-200">
                       <div className="rounded-lg overflow-hidden bg-white p-2 relative" ref={qrCodeRef}>
                         <QRCode
-                          data={`https://etherscan.io/tx/${transactionHash}${config.oneTimeVerify ? '?oneTime=true' : ''}`}
+                          data={`https://etherscan.io/tx/${transactionHash}`}
                           className="w-28 h-28"
                         />
-                        {config.oneTimeVerify && (
-                          <div className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1 py-0.5 rounded">
-                            1X
-                          </div>
-                        )}
                       </div>
                     </div>
                     <p className="text-xs text-center text-gray-600 animate-in fade-in duration-500 delay-300 max-w-xs mx-auto mb-4">
@@ -690,6 +703,41 @@ export default function SimplePage() {
                   DONE
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+        {generatedLink && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+            <div className="bg-background border border-border p-6 rounded-xl shadow-2xl max-w-md w-full space-y-6 animate-in zoom-in-95 duration-300">
+              <div className="text-center space-y-2">
+                <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Copy className="w-6 h-6 text-primary" />
+                </div>
+                <h3 className="text-xl font-bold">PAYMENT_LINK_READY</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your payment link has been generated successfully.
+                </p>
+              </div>
+
+              <div className="p-4 bg-muted/50 rounded-lg border border-border break-all font-mono text-sm text-center select-all">
+                {generatedLink}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" onClick={() => {
+                  navigator.clipboard.writeText(generatedLink);
+                  toast.success("Link copied to clipboard");
+                }}>
+                  COPY_LINK
+                </Button>
+                <Link href={generatedLink} target="_blank" className="w-full">
+                  <Button className="w-full">OPEN_PAGE</Button>
+                </Link>
+              </div>
+
+              <Button variant="ghost" className="w-full" onClick={() => setGeneratedLink(null)}>
+                CLOSE
+              </Button>
             </div>
           </div>
         )}

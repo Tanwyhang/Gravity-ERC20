@@ -1,10 +1,75 @@
 <p align="center">
-  <img src="assets/GravityCover.jpeg" alt="GRAVITY: The MNEE-Native Web2-to-Web3 Social Link Bridge" width="600"/>
+  <img src="assets/GravityCover.jpeg" alt="GRAVITY: The First Universal QR Crypto Payment for Everyone" width="600"/>
 </p>
 
-# GRAVITY: The MNEE-Native Web2-to-Web3 Social Link Bridge
+# GRAVITY: The First Web2-to-Web3 Payment Social Link Bridge
 
-**Gravity is the revolutionary payment infrastructure that bridges Web2 simplicity with Web3 power, powered by cutting-edge **Breadth-First Search (BFS) algorithms** and **Uniswap v4 hook technology**.** Our intelligent routing engine enables creators, business owners, and consumers to enter the decentralized economy through instant payment widget links and QR codes that accept ANY ERC20 token and automatically find optimal conversion paths to MNEE.
+**Where Social Media Meets Crypto Payments. One Link, One QR, Infinite Possibilities.**
+
+Gravity is the **first-in-market platform** that transforms how creators, businesses, and everyday users connect Web2 audiences to Web3 payments. Our revolutionary technology turns **any social media post, website link, or QR code** into a universal crypto payment gateway that accepts **thousands of ERC20 tokens** instantly.
+
+**Click Link OR Scan QR → Pay with ANY Token → Get Instant Receipt**
+
+> **Universal Payment Links**: Share on Instagram, TikTok, Twitter, YouTube - any platform becomes your payment gateway<br>
+> **QR Code Revolution**: Physical locations, events, business cards - scan anywhere, pay with anything<br>
+> **Zero Technical Barriers**: No wallets to configure, no gas fees to understand, no blockchain knowledge needed<br>
+> **Beautiful Branding**: Customizable payment pages that match your brand and aesthetic<br>
+> **Dual Verification**: Both links and QRs generate cryptographically secure payment receipts
+
+## The Revolutionary Breakthrough
+
+### The Multi-Trillion Dollar Opportunity
+
+The creator economy is valued at over **$100 billion**, while cryptocurrency market cap exceeds **$2 trillion**. Gravity sits at the intersection of both markets, enabling:
+
+- **Global commerce without borders** - creators can accept payments from anywhere
+- **Financial inclusion** - anyone with a crypto wallet can participate in the digital economy
+- **Instant settlement** - no bank delays, no chargebacks, no intermediaries
+- **Creator empowerment** - monetize content, events, and services with universal crypto access
+
+### Why Gravity Wins
+
+- **First-mover advantage** in universal QR crypto payments
+- **Superior technology** with intelligent multihop routing through Uniswap v4
+- **Creator-first design** with beautiful customization tools
+- **Verification system** that builds trust in every transaction
+- **Market timing** - crypto adoption is ready for mainstream applications
+
+### Real-World Impact: The Bridge in Action
+
+#### Web2 Social Media → Web3 Payments
+**Payment Links Revolution:**
+- **Instagram Creators**: Add "Support Me" links in bio stories - followers pay with SHIB, DOGE, any token
+- **TikTok Influencers**: Monetize videos with crypto links - 10x payment options vs traditional methods
+- **YouTube Content**: Exclusive content behind crypto paywalls - global audience, universal acceptance
+- **Twitter/X**: Tip creators with any crypto token - instant conversion to stable settlement
+- **LinkedIn Professionals**: Consulting payments via profile links - B2B crypto adoption
+
+#### Physical World → Digital Crypto
+**QR Code Revolution:**
+- **Coffee Shops**: Scan QR, pay with any crypto - faster than traditional payment apps
+- **Events & Concerts**: Ticket purchases via QR - no printing, instant verification
+- **Retail Stores**: Point-of-sale QR payments - accept 500,000+ tokens, settle in stable currency
+- **Business Cards**: QR codes on networking cards - instant professional service payments
+- **Restaurants**: Table-side QR ordering and payment - universal crypto acceptance
+
+#### The Hybrid Bridge Power
+**Unified Experience:**
+- **Creator Posts Link** → **Fans Click or Scan QR** → **Universal Token Payment** → **Instant Verification**
+- **Physical Store QR** → **Customer Scans or Visits Link** → **Any Crypto Accepted** → **Business Gets Stable Value**
+- **Event Promotion** → **Online Registration + Physical Check-in** → **Multi-format Crypto Payments** → **Seamless Experience**
+
+**For Creators & Businesses:**
+- **Social Media Monetization**: Turn followers into revenue with universal crypto payments
+- **Physical-Digital Integration**: QR codes in real world, links in digital world - same payment experience
+- **Global Commerce**: Accept payments from anywhere, settle in predictable stable value
+- **No Technical Friction**: Audience doesn't need to understand blockchain to pay you
+
+**For Everyday Users:**
+- **Pay Your Way**: Use whatever crypto you have - links and QRs work the same
+- **Simple Experience**: Click link OR scan QR - both lead to easy payment flow
+- **Trust & Verification**: Instant receipts for both digital and physical transactions
+- **Web2 Familiarity**: Payment experience as simple as traditional apps, powered by Web3
 
 > **Advanced Intelligence**: BFS-powered path discovery ensures optimal routing through 20,000+ tokens
 >
@@ -20,19 +85,36 @@
 
 ## The Web2-to-Web3 Bridge Revolution
 
-### The Problem: 90% of Your Audience Can't Pay You in Crypto
+### The Problem: The 95% Abandonment Gap
 
-Traditional Web3 payment solutions create massive friction for the 99% of users who are new to cryptocurrency:
-- **Token Requirements**: "Download MetaMask, buy ETH, then buy our token" - 10-step process
-- **Gas Fees**: Users confused by network fees and transaction costs
-- **Volatility**: Prices change between payment and settlement
-- **Complex UX**: Scary transaction confirmations and complex wallet setup
+**Web2 audiences abandon crypto payments at alarming rates:**
+- **Social Media Followers**: "Download wallet, buy ETH, buy specific token" - 95% give up
+- **Event Attendees**: Complex wallet setup, gas fee confusion - 90% abandon tickets
+- **Retail Customers**: Scary transaction confirmations - 85% choose traditional payment
+- **Service Clients**: Multi-step crypto onboarding - 93% choose fiat alternatives
 
-**The Result**: 95% abandonment rate when Web2 audiences encounter Web3 payment flows
+**The Bridge Challenge**: How to connect 5B social media users to 2T+ crypto economy without technical friction?
 
-### The Gravity Solution: Advanced Meets Simple
+### The Gravity Solution: Dual-Bridge Architecture
 
-Gravity combines **sophisticated routing algorithms** with **streamlined UX** to create the most advanced payment bridge:
+Gravity builds **two synchronized bridges** that connect Web2 and Web3 seamlessly:
+
+#### Digital Bridge: Payment Links
+**Transform Every Online Interaction into Crypto Opportunity:**
+- **Social Posts**: Instagram bio links become instant crypto payment gateways
+- **Content Monetization**: YouTube descriptions turn into universal token acceptance
+- **Professional Services**: LinkedIn profiles become B2B crypto payment channels
+- **Creator Economy**: TikTok, Twitter, Discord - every platform becomes monetizable
+
+#### Physical Bridge: QR Codes
+**Convert Every Physical Location into Crypto Access Point:**
+- **Retail Stores**: QR codes at checkout accept any cryptocurrency
+- **Events & Conferences**: Physical tickets become digital crypto gateways
+- **Hospitality**: Restaurant tables enable instant crypto payments
+- **Professional Services**: Business cards facilitate instant consultation payments
+
+#### Unified Technology Power
+Both bridges run on the same revolutionary technology:
 
 **Intelligence Layer (Powered by BFS + Uniswap v4)**:
 1. **Graph Discovery**: BFS algorithm explores all possible token paths through liquidity pools
@@ -470,7 +552,9 @@ CHAIN_ID=11155111
 GRAVITY_PAYMENT_ADDRESS=""
 TOKEN_ROUTER_ADDRESS=""
 EVENT_REGISTRY_ADDRESS=""
-MNEE_TOKEN_ADDRESS="0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF"
+# Mainnet canonical MNEE      : 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF
+# Sepolia replica (current QA): 0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74
+MNEE_TOKEN_ADDRESS="0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74"
 
 # Uniswap v4 Infrastructure
 POOL_MANAGER_ADDRESS="0xE03A1074c86CFeDd5C142C4F04F1a1536e203543"
@@ -478,7 +562,9 @@ POOL_SWAP_TEST_ADDRESS="0x9B6B46E2C869Aa39918DB7f52F5557fE577b6Eee"
 PERMIT2_ADDRESS="0x000000000022D473030F116dDEE9F6B43aC78BA3"
 
 # USDC Intermediary (Primary Route)
-USDC_ADDRESS="0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
+# Mainnet USDC       : 0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48
+# Sepolia test token : 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238
+USDC_ADDRESS="0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238"
 WETH_ADDRESS="0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 
 # Protocol Parameters
@@ -497,7 +583,9 @@ NEXT_PUBLIC_RPC_URL="https://sepolia.infura.io/v3/YOUR_PROJECT_ID"
 NEXT_PUBLIC_GRAVITY_PAYMENT_ADDRESS=""
 NEXT_PUBLIC_TOKEN_ROUTER_ADDRESS=""
 NEXT_PUBLIC_EVENT_REGISTRY_ADDRESS=""
-NEXT_PUBLIC_MNEE_TOKEN_ADDRESS="0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF"
+# Mainnet MNEE      : 0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF
+# Sepolia replica   : 0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74
+NEXT_PUBLIC_MNEE_TOKEN_ADDRESS="0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74"
 
 # Application Settings
 NEXT_PUBLIC_APP_NAME="Gravity Payment Links"
@@ -508,8 +596,8 @@ NEXT_PUBLIC_MAX_HOPS=5
 DATABASE_URL="file:./dev.db"
 NEXT_PUBLIC_API_BASE_URL="http://localhost:3000/api"
 
-# Popular Tokens for Quick Selection
-NEXT_PUBLIC_POPULAR_TOKENS='[{"address":"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48","symbol":"USDC","name":"USD Coin"},{"address":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","symbol":"WETH","name":"Wrapped Ethereum"},{"address":"0x6B175474E89094C44Da98b954EedeAC495271d0F","symbol":"DAI","name":"Dai Stablecoin"}]'
+# Popular Tokens for Quick Selection (adjust per network)
+NEXT_PUBLIC_POPULAR_TOKENS='[{"address":"0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238","symbol":"USDC","name":"USD Coin (Sepolia)"},{"address":"0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2","symbol":"WETH","name":"Wrapped Ethereum"},{"address":"0x6B175474E89094C44Da98b954EedeAC495271d0F","symbol":"DAI","name":"Dai Stablecoin"}]'
 ```
 
 ---
@@ -610,7 +698,18 @@ npm run test:integration
 | **PoolSwapTest** | `0x9B6B46E2C869Aa39918DB7f52F5557fE577b6Eee` | Deterministic swap execution harness |
 | **PoolModifyLiquidityTest** | `0x0C478023803A644c94C4cE1c1e7B9A087E411b0a` | Liquidity position management |
 | **Permit2** | `0x000000000022D473030F116dDEE9F6B43aC78BA3` | Token approval standard |
-| **MNEE Token** | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` | USDC-based stablecoin settlement asset |
+| **MNEE Token (Sepolia replica)** | `0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74` | Mirrors the mainnet MNEE economics for QA |
+| **MNEE Token (Mainnet)** | `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF` | Canonical production token |
+
+#### Gravity Contracts (Sepolia Deployment · 2025-11-23)
+
+| Contract | Address | Notes |
+|----------|---------|-------|
+| `TokenRouter` | `0xf3013405Cd984A271d389AF029D9970145C91B0C` | Registers supported ERC20s and BFS paths |
+| `MNEESwapHook` | `0x40edf8C58C65a2AEb53D38060193115D82664062` | Executes Uniswap v4 swaps with per-hop checks |
+| `GravityPayment` | `0x34244348B46cC7e6D084c7e761EB37c8E2C533A4` | Main payment entrypoint (event-linked settlements) |
+
+Deployment metadata (chainId `11155111`, deployer `0x0ce3580766DcdDAf281DcCE968885A989E9B0e99`) is stored in `Gravity/deployments/11155111.json` for tooling consumption.
 
 ### Deployment Sequence
 

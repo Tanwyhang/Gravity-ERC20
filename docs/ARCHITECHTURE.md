@@ -103,7 +103,7 @@ Gravity fuses off-chain graph intelligence with on-chain Uniswap v4 hooks so tha
 
 ## 5. Configuration & Deployment Notes
 
-- `.env.example` (in `Gravity/`) contains Sepolia defaults for PoolManager, Permit2, Universal Router, etc., plus the canonical MNEE token `0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`.
+- `.env.example` (in `Gravity/`) contains Sepolia defaults for PoolManager, Permit2, Universal Router, etc., and documents both the production MNEE (`0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF`) and the Sepolia replica used for QA (`0x9CAF26bBFe63269FAF5C425f268fF81299dD9A74`).
 - `hardhat.config.ts` already declares a `sepolia` network using `SEPOLIA_RPC_URL` + `SEPOLIA_PRIVATE_KEY` configuration variables, so CI/CD can inject secrets without touching source.
 - `config/networks.ts` exports `getNetworkAddresses(chainId)` so TypeScript clients automatically fill Permit2/Universal Router addresses for known chains (currently 11155111).
 

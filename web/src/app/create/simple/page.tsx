@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useCallback, useMemo, useRef } from "react"
+import { useState, useCallback, useMemo, useRef, useEffect } from "react"
+import { useAccount } from "wagmi"
 import { Eye, ArrowLeft, Copy } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
@@ -34,6 +35,7 @@ interface PaymentConfig {
   buttonStyle: 'solid' | 'gradient' | 'outline' | 'glow'
   animation: 'none' | 'pulse' | 'bounce' | 'glow'
   showQRCode: boolean
+  customThumbnail?: string // Supports static images and animated GIFs
 }
 
 export default function SimplePage() {
@@ -42,7 +44,10 @@ export default function SimplePage() {
   const [transactionHash, setTransactionHash] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [generatedLink, setGeneratedLink] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const qrCodeRef = useRef<HTMLDivElement>(null)
+  const { address } = useAccount()
 
   const [config, setConfig] = useState<PaymentConfig>({
     template: 'simple',
@@ -68,7 +73,24 @@ export default function SimplePage() {
     showQRCode: true,
   })
 
+  useEffect(() => {
+    if (address) {
+      setConfig(prev => {
+        if (prev.recipientAddress === '0x742d35Cc6634C0532925a3b8D4C9db96C4b4Db45' || prev.recipientAddress === '') {
+          return { ...prev, recipientAddress: address }
+        }
+        return prev
+      })
+    }
+  }, [address])
+
   const themes = {
+    walrus: {
+      primaryColor: '#243370',
+      backgroundColor: '#d6fffa',
+      textColor: '#000000',
+      borderColor: '#030303',
+    },
     dark: {
       primaryColor: '#ffffffff',
       backgroundColor: '#0a0a0a',
@@ -141,6 +163,40 @@ export default function SimplePage() {
     }
   }, [isProcessing])
 
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Max 10MB for images and GIFs.")
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const response = await fetch(
+        `/api/upload?filename=${encodeURIComponent(file.name)}`,
+        {
+          method: 'POST',
+          body: file,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
+      }
+
+      const newBlob = await response.json();
+      updateConfig('customThumbnail', newBlob.url)
+      toast.success("Logo uploaded successfully!")
+    } catch (error) {
+      console.error('Upload error:', error)
+      toast.error("Failed to upload logo")
+    } finally {
+      setIsUploading(false)
+    }
+  }
+
   const handleGenerateLink = useCallback(() => {
     const uniqueId = Math.random().toString(36).substring(2, 9)
     const params = new URLSearchParams({
@@ -158,8 +214,10 @@ export default function SimplePage() {
       recipientAddress: config.recipientAddress,
       showTransactionId: config.showTransactionId.toString(),
       animation: config.animation,
+      usdAmount: config.usdAmount,
       // customThumbnail might be too large for URL if it's base64, but for now we include it if present
       // Ideally this should be uploaded and a URL passed, but for this demo we'll try
+      customThumbnail: config.customThumbnail || '',
     })
     // Simple template doesn't have customThumbnail
 
@@ -241,6 +299,20 @@ export default function SimplePage() {
             className="absolute inset-0 pointer-events-none rounded-xl opacity-20 blur-xl"
             style={{ backgroundColor: config.primaryColor }}
           />
+        )}
+
+        {config.customThumbnail && (
+          <div className="flex justify-center mb-6">
+             <div className="w-full rounded-lg overflow-hidden relative" style={{ borderRadius: `${Math.min(config.borderRadius / 2, 8)}px` }}>
+                <div className="aspect-video w-full">
+                  <img
+                    src={config.customThumbnail}
+                    alt="Merchant logo"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+             </div>
+          </div>
         )}
 
         <div className="relative">
@@ -556,6 +628,43 @@ export default function SimplePage() {
                           onCheckedChange={(checked) => updateConfig('showQRCode', checked)}
                         />
                       </div>
+                      </div>
+                      
+                      <div className="flex items-center justify-between gap-4 p-4">
+                        <div className="flex flex-col gap-1">
+                          <Label className="font-medium">MERCHANT_LOGO</Label>
+                          <p className="text-muted-foreground text-xs">
+                            Upload a custom logo or animated GIF (Max 10MB)
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="file"
+                            ref={fileInputRef}
+                            className="hidden"
+                            accept="image/*,.gif"
+                            onChange={handleFileUpload}
+                          />
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            onClick={() => fileInputRef.current?.click()}
+                            disabled={isUploading}
+                          >
+                            {isUploading ? <Spinner className="w-4 h-4 mr-2" /> : null}
+                            {config.customThumbnail ? 'CHANGE' : 'UPLOAD'}
+                          </Button>
+                          {config.customThumbnail && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-600"
+                              onClick={() => updateConfig('customThumbnail', undefined)}
+                            >
+                              REMOVE
+                            </Button>
+                          )}
+                        </div>
                       </div>
                     </div>
 

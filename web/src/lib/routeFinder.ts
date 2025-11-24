@@ -23,13 +23,34 @@ export async function findOptimalPath(
   maxHops: number = 3
 ): Promise<Address[] | null> {
   try {
-    console.log('🔍 Finding route from', tokenIn, 'to', tokenOut, 'with max hops:', maxHops);
-    
+    console.log('🔍 MOCK: Finding route from', tokenIn, 'to', tokenOut, 'with max hops:', maxHops);
+
     // If same token, return single-element path
     if (tokenIn.toLowerCase() === tokenOut.toLowerCase()) {
-      console.log('✅ Same token, returning direct path');
+      console.log('✅ MOCK: Same token, returning direct path');
       return [tokenIn];
     }
+
+    // MOCK: Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // MOCK: Always return a path via USDC as intermediate token
+    const USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+
+    if (tokenIn.toLowerCase() === USDC_ADDRESS.toLowerCase()) {
+      // Direct USDC to MNEE path
+      const mockPath = [tokenIn, tokenOut];
+      console.log('✅ MOCK: Direct USDC to MNEE path found:', mockPath.map(a => a.slice(0, 6)).join(' → '));
+      return mockPath;
+    } else {
+      // Token -> USDC -> MNEE path
+      const mockPath = [tokenIn, USDC_ADDRESS, tokenOut];
+      console.log('✅ MOCK: Multi-hop path via USDC found:', mockPath.map(a => a.slice(0, 6)).join(' → '));
+      return mockPath;
+    }
+
+    /*
+    // ORIGINAL BLOCKCHAIN INTERACTIONS (COMMENTED OUT):
 
     const normalizedOut = tokenOut.toLowerCase();
     const queue: Address[][] = [[tokenIn]];
@@ -53,7 +74,7 @@ export async function findOptimalPath(
       // Get neighbors for current token
       const neighborKey = last.toLowerCase();
       let neighbors = neighborCache.get(neighborKey);
-      
+
       if (!neighbors) {
         try {
           console.log('  📡 Fetching neighbors for', last.slice(0, 6));
@@ -63,7 +84,7 @@ export async function findOptimalPath(
             functionName: 'getNeighbors',
             args: [last],
           }) as Address[];
-          
+
           console.log('  ✅ Found', fetchedNeighbors.length, 'neighbors:', fetchedNeighbors.map(n => n.slice(0, 6)));
           neighborCache.set(neighborKey, fetchedNeighbors);
           neighbors = fetchedNeighbors;
@@ -81,12 +102,12 @@ export async function findOptimalPath(
       // Explore neighbors
       for (const neighbor of neighbors) {
         const neighborLower = neighbor.toLowerCase();
-        
+
         if (visited.has(neighborLower)) {
           console.log('  ⏭️ Already visited', neighbor.slice(0, 6));
           continue;
         }
-        
+
         visited.add(neighborLower);
         const nextPath = [...currentPath, neighbor];
 
@@ -120,8 +141,10 @@ export async function findOptimalPath(
     // No path found
     console.log('❌ No route found after', iterations, 'iterations');
     return null;
+    */
+
   } catch (error) {
-    console.error('❌ Route discovery failed:', error);
+    console.error('❌ MOCK: Route discovery failed:', error);
     return null;
   }
 }

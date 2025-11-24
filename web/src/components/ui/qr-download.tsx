@@ -11,6 +11,7 @@ interface QRDownloadProps {
   tokenSymbol?: string;
   className?: string;
   style?: React.CSSProperties;
+  qrData?: string;
 }
 
 export const QRDownload: React.FC<QRDownloadProps> = ({
@@ -19,7 +20,8 @@ export const QRDownload: React.FC<QRDownloadProps> = ({
   amount,
   tokenSymbol = '',
   className = "",
-  style = {}
+  style = {},
+  qrData
 }) => {
   const handleDownload = () => {
     if (qrCodeRef.current) {
@@ -72,8 +74,8 @@ export const QRDownload: React.FC<QRDownloadProps> = ({
               document.body.removeChild(downloadLink);
               URL.revokeObjectURL(url);
 
-              toast.success("QR Code downloaded!", {
-                description: "Payment QR code saved as PNG file with context.",
+              toast.success("Etherscan QR Code downloaded!", {
+                description: "QR code linking to transaction details saved as PNG.",
                 dismissible: false,
                 duration: 3000
               });
@@ -99,7 +101,7 @@ export const QRDownload: React.FC<QRDownloadProps> = ({
       style={style}
     >
       <Download className="w-3 h-3" />
-      DOWNLOAD_QR
+      DOWNLOAD_ETHERSCAN_QR
     </button>
   );
 };

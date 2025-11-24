@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useCallback, useMemo, useRef } from "react"
+import { useState, useCallback, useMemo, useRef, useEffect } from "react"
+import { useAccount } from "wagmi"
 import { Upload, Eye, ArrowLeft, Copy } from "lucide-react"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
 import { Slider } from "@/components/ui/slider"
@@ -20,7 +21,7 @@ interface PaymentConfig {
   backgroundColor: string
   textColor: string
   borderColor: string
-  customThumbnail: string | null
+  customThumbnail: string | null // Supports static images and animated GIFs
   tokenSymbol: string
   tokenAmount: string
   usdAmount: string
@@ -40,11 +41,13 @@ interface PaymentConfig {
 
 export default function CustomThumbnailPage() {
   const [isProcessing, setIsProcessing] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'success' | 'error'>('idle')
   const [transactionHash, setTransactionHash] = useState<string | null>(null)
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [generatedLink, setGeneratedLink] = useState<string | null>(null)
   const qrCodeRef = useRef<HTMLDivElement>(null)
+  const { address } = useAccount()
 
   const [config, setConfig] = useState<PaymentConfig>({
     template: 'thumbnail',
@@ -71,7 +74,24 @@ export default function CustomThumbnailPage() {
     showQRCode: true,
   })
 
+  useEffect(() => {
+    if (address) {
+      setConfig(prev => {
+        if (prev.recipientAddress === '0x742d35Cc6634C0532925a3b8D4C9db96C4b4Db45' || prev.recipientAddress === '') {
+          return { ...prev, recipientAddress: address }
+        }
+        return prev
+      })
+    }
+  }, [address])
+
   const themes = {
+    walrus: {
+      primaryColor: '#243370',
+      backgroundColor: '#d6fffa',
+      textColor: '#000000',
+      borderColor: '#030303',
+    },
     dark: {
       primaryColor: '#ffffffff',
       backgroundColor: '#0a0a0a',
@@ -115,14 +135,37 @@ export default function CustomThumbnailPage() {
     })
   }
 
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        updateConfig('customThumbnail', reader.result as string)
+    if (!file) return
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("File too large. Max 10MB for images and GIFs.")
+      return
+    }
+
+    setIsUploading(true)
+    try {
+      const response = await fetch(
+        `/api/upload?filename=${encodeURIComponent(file.name)}`,
+        {
+          method: 'POST',
+          body: file,
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error('Upload failed')
       }
-      reader.readAsDataURL(file)
+
+      const newBlob = await response.json();
+      updateConfig('customThumbnail', newBlob.url)
+      toast.success("Logo uploaded successfully!")
+    } catch (error) {
+      console.error('Upload error:', error)
+      toast.error("Failed to upload logo")
+    } finally {
+      setIsUploading(false)
     }
   }, [updateConfig])
 
@@ -172,6 +215,7 @@ export default function CustomThumbnailPage() {
       recipientAddress: config.recipientAddress,
       showTransactionId: config.showTransactionId.toString(),
       animation: config.animation,
+      usdAmount: config.usdAmount,
     })
     if (config.customThumbnail) {
         // Warning: Base64 images in URL might hit length limits
@@ -272,13 +316,15 @@ export default function CustomThumbnailPage() {
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer">
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,.gif"
                     onChange={handleImageUpload}
                     className="hidden"
                     id="thumbnail-upload-preview"
+                    disabled={isUploading}
                   />
-                  <label htmlFor="thumbnail-upload-preview" className="cursor-pointer text-white text-xs font-medium">
-                    CHANGE_IMAGE
+                  <label htmlFor="thumbnail-upload-preview" className="cursor-pointer text-white text-xs font-medium flex items-center gap-2">
+                    {isUploading ? <Spinner className="w-4 h-4" /> : <Upload className="w-4 h-4" />}
+                    {isUploading ? 'UPLOADING...' : 'CHANGE_IMAGE'}
                   </label>
                 </div>
                 <label htmlFor="thumbnail-upload-preview" className="absolute inset-0 cursor-pointer" />
@@ -288,14 +334,18 @@ export default function CustomThumbnailPage() {
                 <AspectRatio ratio={16 / 9} className="flex items-center justify-center hover:border-foreground/50 transition-colors">
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.gif"
                   onChange={handleImageUpload}
                   className="hidden"
                   id="thumbnail-upload-preview"
                 />
                 <label htmlFor="thumbnail-upload-preview" className="cursor-pointer space-y-2 text-center">
-                  <Upload className="w-6 h-6 mx-auto text-muted-foreground" />
-                  <div className="text-xs text-muted-foreground">UPLOAD_LOGO</div>
+                  {isUploading ? (
+                    <Spinner className="w-6 h-6 mx-auto text-muted-foreground" />
+                  ) : (
+                    <Upload className="w-6 h-6 mx-auto text-muted-foreground" />
+                  )}
+                  <div className="text-xs text-muted-foreground">{isUploading ? 'UPLOADING...' : 'UPLOAD_LOGO_OR_GIF'}</div>
                 </label>
                 </AspectRatio>
               </div>

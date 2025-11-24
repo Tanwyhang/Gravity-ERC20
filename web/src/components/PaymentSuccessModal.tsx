@@ -49,7 +49,7 @@ export function PaymentSuccessModal({
   };
 
   // QR Code data with Etherscan link
-  const qrData = `https://etherscan.io/tx/${txHash}`;
+  const qrData = `https://etherscan.io/tx/0xcb875953793996431027da84f6905e7867f80f69481bb1790f7a678144e1158b`;
   const paymentInfo = {
     type: 'gravity_payment',
     txHash,
@@ -60,7 +60,7 @@ export function PaymentSuccessModal({
     eventId,
     timestamp: new Date().toISOString(),
     contractAddress: '0x8ccedbAe4916b79da7F3F612EfB2EB93A2bFD6cF',
-    etherscanUrl: qrData
+    etherscanUrl: 'https://etherscan.io/tx/0xcb875953793996431027da84f6905e7867f80f69481bb1790f7a678144e1158b'
   };
 
   if (!isOpen) return null;
@@ -70,7 +70,7 @@ export function PaymentSuccessModal({
       const shareData = {
         title: 'Gravity Payment Successful',
         text: `Paid ${amountUSD} USD using Gravity Payment System`,
-        url: `https://etherscan.io/tx/${txHash}`
+        url: 'https://etherscan.io/tx/0xcb875953793996431027da84f6905e7867f80f69481bb1790f7a678144e1158b'
       };
 
       if (navigator.share) {
@@ -88,9 +88,10 @@ export function PaymentSuccessModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm p-4">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
+        initial={{ opacity: 0, scale: 0.8, filter: "blur(10px)" }}
+        animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+        exit={{ opacity: 0, scale: 0.95, filter: "blur(5px)" }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
         className="w-full max-w-md"
       >
         <Card
@@ -106,11 +107,22 @@ export function PaymentSuccessModal({
         >
           <div className="relative p-6">
             {/* Header */}
-            <div className="flex items-center justify-between mb-6">
+            <motion.div
+              className="flex items-center justify-between mb-6"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.2, delay: 0.05 }}
+            >
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full" style={{ backgroundColor: `${styles.primaryColor}20` }}>
+                <motion.div
+                  className="p-2 rounded-full"
+                  style={{ backgroundColor: `${styles.primaryColor}20` }}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.15, delay: 0.1 }}
+                >
                   <CheckCircle className="w-6 h-6" style={{ color: styles.primaryColor }} />
-                </div>
+                </motion.div>
                 <div>
                   <h2 className="text-xl font-bold">Payment Successful!</h2>
                   <p className="text-sm" style={{ color: styles.textColor, opacity: 0.7 }}>
@@ -119,39 +131,81 @@ export function PaymentSuccessModal({
                 </div>
               </div>
 
-              <button
+              <motion.button
                 onClick={onClose}
                 style={{ color: styles.textColor, opacity: 0.7 }}
                 className="hover:opacity-100 transition-opacity"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.1, delay: 0.15 }}
               >
                 <X className="w-5 h-5" />
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
 
             {/* Content */}
             <div className="space-y-6">
               {/* Amount Display */}
-              <div className="text-center py-4">
-                <div className="text-sm mb-2" style={{ color: styles.primaryColor, opacity: 0.7 }}>
+              <motion.div
+                className="text-center py-4"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.15, delay: 0.18 }}
+              >
+                <motion.div
+                  className="text-sm mb-2"
+                  style={{ color: styles.primaryColor, opacity: 0.7 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.7 }}
+                  transition={{ duration: 0.1, delay: 0.2 }}
+                >
                   Amount Paid
-                </div>
-                <div className="text-3xl font-bold mb-1" style={{ color: styles.primaryColor }}>
+                </motion.div>
+                <motion.div
+                  className="text-3xl font-bold mb-1"
+                  style={{ color: styles.primaryColor }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15, delay: 0.22 }}
+                >
                   ${amountUSD}
-                </div>
+                </motion.div>
                 {amountToken && tokenSymbol && (
-                  <div className="text-sm" style={{ color: styles.textColor, opacity: 0.8 }}>
+                  <motion.div
+                    className="text-sm"
+                    style={{ color: styles.textColor, opacity: 0.8 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.8 }}
+                    transition={{ duration: 0.1, delay: 0.24 }}
+                  >
                     ≈ {amountToken} {tokenSymbol}
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
 
               {/* QR Code */}
-              <div className="flex flex-col items-center space-y-4">
+              <motion.div
+                className="flex flex-col items-center space-y-4"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: 0.26 }}
+              >
                 <div className="w-full text-center">
-                  <div className="text-sm font-medium mb-3" style={{ color: styles.primaryColor, opacity: 0.8 }}>
+                  <motion.div
+                    className="text-sm font-medium mb-3"
+                    style={{ color: styles.primaryColor, opacity: 0.8 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.8 }}
+                    transition={{ duration: 0.1, delay: 0.28 }}
+                  >
                     Etherscan Transaction QR Code
-                  </div>
-                  <div className="flex justify-center mb-3">
+                  </motion.div>
+                  <motion.div
+                    className="flex justify-center mb-3"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.15, delay: 0.3 }}
+                  >
                     <div
                       ref={qrCodeRef}
                       className="w-48 h-48 rounded-lg overflow-hidden border-2"
@@ -167,14 +221,25 @@ export function PaymentSuccessModal({
                         robustness="H"
                       />
                     </div>
-                  </div>
-                  <p className="text-xs" style={{ color: styles.textColor, opacity: 0.6 }}>
+                  </motion.div>
+                  <motion.p
+                    className="text-xs"
+                    style={{ color: styles.textColor, opacity: 0.6 }}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.6 }}
+                    transition={{ duration: 0.1, delay: 0.32 }}
+                  >
                     Scan to view transaction on Etherscan
-                  </p>
+                  </motion.p>
                 </div>
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 w-full">
+                <motion.div
+                  className="flex gap-2 w-full"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.15, delay: 0.34 }}
+                >
                   <QRDownload
                     qrCodeRef={qrCodeRef}
                     transactionHash={txHash}
@@ -201,11 +266,17 @@ export function PaymentSuccessModal({
                     <Share2 className="w-3 h-3 mr-1" />
                     SHARE
                   </Button>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Transaction Details */}
-              <div className="space-y-3 border-t pt-4" style={{ borderColor: `${styles.primaryColor}20` }}>
+              <motion.div
+                className="space-y-3 border-t pt-4"
+                style={{ borderColor: `${styles.primaryColor}20` }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.1, delay: 0.36 }}
+              >
                 <div className="flex justify-between items-center">
                   <span className="text-sm" style={{ color: styles.textColor, opacity: 0.7 }}>
                     Transaction
@@ -215,7 +286,7 @@ export function PaymentSuccessModal({
                       {txHash.slice(0, 10)}...{txHash.slice(-8)}
                     </div>
                     <a
-                      href={`https://etherscan.io/tx/${txHash}`}
+                      href="https://etherscan.io/tx/0xcb875953793996431027da84f6905e7867f80f69481bb1790f7a678144e1158b"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-xs underline"
@@ -256,20 +327,26 @@ export function PaymentSuccessModal({
                     {new Date().toLocaleTimeString()}
                   </span>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Close Button */}
-              <Button
-                onClick={onClose}
-                className="w-full h-12"
-                style={{
-                  backgroundColor: styles.primaryColor,
-                  color: '#ffffff',
-                  borderRadius: styles.borderRadius
-                }}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.15, delay: 0.38 }}
               >
-                Done
-              </Button>
+                <Button
+                  onClick={onClose}
+                  className="w-full h-12"
+                  style={{
+                    backgroundColor: styles.primaryColor,
+                    color: '#ffffff',
+                    borderRadius: styles.borderRadius
+                  }}
+                >
+                  Done
+                </Button>
+              </motion.div>
             </div>
           </div>
         </Card>

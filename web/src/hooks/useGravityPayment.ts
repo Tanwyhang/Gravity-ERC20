@@ -121,7 +121,7 @@ export function useGravityPayment(
       await new Promise(resolve => setTimeout(resolve, 3000));
 
       // MOCK: Use fixed transaction hash
-      const mockTxHash = "0xaaccad9bd0f67ead92aa3e50b00eefd743feecabc7df5927c9d5db47d28ca86d";
+      const mockTxHash = "0x536d444bba96386dd4436fd297f785a7a6fc5f13b91cf57a2b59235def4b6bdd";
 
       console.log('MOCK: Payment transaction simulated');
       console.log('MOCK: Transaction hash:', mockTxHash);

@@ -39,12 +39,12 @@ export async function findOptimalPath(
 
     if (tokenIn.toLowerCase() === USDC_ADDRESS.toLowerCase()) {
       // Direct USDC to MNEE path
-      const mockPath = [tokenIn, tokenOut];
+      const mockPath: Address[] = [tokenIn, tokenOut];
       console.log('✅ MOCK: Direct USDC to MNEE path found:', mockPath.map(a => a.slice(0, 6)).join(' → '));
       return mockPath;
     } else {
       // Token -> USDC -> MNEE path
-      const mockPath = [tokenIn, USDC_ADDRESS, tokenOut];
+      const mockPath: Address[] = [tokenIn, USDC_ADDRESS as Address, tokenOut];
       console.log('✅ MOCK: Multi-hop path via USDC found:', mockPath.map(a => a.slice(0, 6)).join(' → '));
       return mockPath;
     }

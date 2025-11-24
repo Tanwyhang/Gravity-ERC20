@@ -39,8 +39,7 @@ export const paymentThemes: PaymentTheme[] = [
       recipientAddress: '0x0ce3580766DcdDAf281DcCE968885A989E9B0e99',
       showTransactionId: true,
       animation: 'pulse',
-      usdAmount: '124.50',
-      customThumbnail: undefined
+          customThumbnail: undefined
     }
   },
   {
@@ -61,8 +60,7 @@ export const paymentThemes: PaymentTheme[] = [
       recipientAddress: '0x0ce3580766DcdDAf281DcCE968885A989E9B0e99',
       showTransactionId: true,
       animation: 'pulse',
-      usdAmount: '124.50',
-      customThumbnail: undefined
+          customThumbnail: undefined
     }
   },
   {
@@ -187,6 +185,20 @@ export function parseUrlThemeParams(searchParams: URLSearchParams): Partial<Paym
       // Handle number values
       else if (configKey === 'borderRadius') {
         config[configKey] = parseInt(value, 10) || undefined;
+      }
+      // Handle buttonStyle with type checking
+      else if (configKey === 'buttonStyle') {
+        const validStyles: Array<'solid' | 'gradient' | 'outline' | 'glow'> = ['solid', 'gradient', 'outline', 'glow'];
+        if (validStyles.includes(value as any)) {
+          config[configKey] = value as any;
+        }
+      }
+      // Handle animation with type checking
+      else if (configKey === 'animation') {
+        const validAnimations: Array<'none' | 'pulse' | 'bounce' | 'glow'> = ['none', 'pulse', 'bounce', 'glow'];
+        if (validAnimations.includes(value as any)) {
+          config[configKey] = value as any;
+        }
       }
       // Handle string values
       else {

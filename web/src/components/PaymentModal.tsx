@@ -42,42 +42,6 @@ interface PaymentModalProps {
 }
 
 export function PaymentModal({ isOpen, onClose, amountUSD, eventId = "1", config, inline = false }: PaymentModalProps) {
-  const { isConnected } = useAccount();
-  const [selectedToken, setSelectedToken] = React.useState<Token | undefined>();
-  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
-
-  // Get token decimals
-  const { data: tokenDecimals } = useReadContract({
-    address: selectedToken?.address,
-    abi: erc20Abi,
-    functionName: 'decimals',
-    query: { enabled: !!selectedToken?.address },
-  });
-
-  // Convert USD to token amount (async)
-  const [tokenAmount, setTokenAmount] = React.useState<string>('0');
-  
-  React.useEffect(() => {
-    if (!selectedToken?.address || !tokenDecimals) {
-      setTokenAmount('0');
-      return;
-    }
-    
-    convertUSDToTokenAmount(amountUSD, selectedToken.address, tokenDecimals)
-      .then(amount => setTokenAmount(amount))
-      .catch(err => {
-        console.error('Price conversion error:', err);
-        setTokenAmount('0');
-      });
-  }, [amountUSD, selectedToken?.address, tokenDecimals]);
-  
-  const { pay, state, path, isPathLoading, canPay } = useGravityPayment(
-    selectedToken?.address,
-    tokenAmount,
-    eventId
-  );
-
-  // Default styles if config is missing
   const styles = {
     backgroundColor: config?.backgroundColor || '#09090b',
     primaryColor: config?.primaryColor || '#6366f1',
@@ -95,23 +59,6 @@ export function PaymentModal({ isOpen, onClose, amountUSD, eventId = "1", config
     recipientAddress: config?.recipientAddress || '',
     customThumbnail: config?.customThumbnail,
   };
-
-  // Show success modal when payment is complete
-  React.useEffect(() => {
-    if (state.txHash && !state.isPaying && !state.error) {
-      setShowSuccessModal(true);
-    }
-  }, [state.txHash, state.isPaying, state.error]);
-
-  // Reset state when closed
-  React.useEffect(() => {
-    if (!isOpen && !inline) {
-      setSelectedToken(undefined);
-      setShowSuccessModal(false);
-    }
-  }, [isOpen, inline]);
-
-  if (!isOpen && !inline) return null;
 
   const getButtonStyle = () => {
     const baseClasses = "w-full h-12 text-lg font-medium border-0 transition-all flex items-center justify-center gap-2 relative overflow-hidden";
@@ -155,7 +102,6 @@ export function PaymentModal({ isOpen, onClose, amountUSD, eventId = "1", config
     if (styles.buttonStyle === 'outline') {
       return styles.primaryColor;
     }
-    // Simple luminance check
     const color = styles.primaryColor.replace('#', '');
     const r = parseInt(color.substr(0, 2), 16);
     const g = parseInt(color.substr(2, 2), 16);
@@ -163,6 +109,171 @@ export function PaymentModal({ isOpen, onClose, amountUSD, eventId = "1", config
     const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
     return luminance > 0.5 ? '#000000' : '#ffffff';
   };
+
+  if (inline) {
+    return (
+      <Card
+        className="relative overflow-hidden shadow-2xl transform-gpu"
+        style={{
+          backgroundColor: styles.backgroundColor,
+          borderRadius: styles.borderRadius,
+          color: styles.textColor,
+          borderColor: styles.borderColor,
+          borderWidth: '2px',
+          borderStyle: 'solid'
+        }}
+      >
+        {(styles.buttonStyle === 'glow' || styles.animation === 'glow') && (
+          <div
+            className="absolute inset-0 pointer-events-none rounded-xl opacity-20 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-current to-transparent"
+            style={{ color: styles.primaryColor }}
+          />
+        )}
+
+        <div className="relative p-6 space-y-6">
+          {styles.customThumbnail && (
+            <div className="flex justify-center">
+              <div className="w-full rounded-lg overflow-hidden relative" style={{ borderRadius: `${Math.min(parseInt(styles.borderRadius) / 2, 8)}px` }}>
+                <div className="aspect-video w-full relative">
+                  <Image
+                    src={styles.customThumbnail}
+                    alt="Merchant logo"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-start justify-between">
+            <div className="flex flex-col gap-1">
+              <h2 className="text-xl font-bold" style={{ color: styles.primaryColor }}>{styles.customTitle}</h2>
+              {styles.merchantName && (
+                <p className="text-xs" style={{ color: styles.primaryColor, opacity: 0.8 }}>{styles.merchantName}</p>
+              )}
+            </div>
+            {styles.showTransactionId && styles.transactionId && (
+              <span className="text-xs font-mono" style={{ color: styles.primaryColor, opacity: 0.6 }}>{styles.transactionId}</span>
+            )}
+          </div>
+
+          <div className="space-y-6">
+            <div className="text-center py-4 space-y-1">
+              <div className="text-sm mb-1" style={{ color: styles.primaryColor, opacity: 0.7 }}>
+                ≈ {styles.tokenAmount} <span className="font-bold" style={{ color: styles.primaryColor, opacity: 0.9 }}>{styles.tokenSymbol}</span>
+              </div>
+              <div className="relative inline-block">
+                <span className="absolute left-0 top-1/2 transform -translate-x-full -translate-y-1/2 text-4xl font-bold tracking-tighter pr-1" style={{ color: styles.primaryColor, opacity: 0.5 }}>$</span>
+                <div className="text-4xl font-bold tracking-tighter" style={{ color: styles.primaryColor }}>
+                  {amountUSD}
+                </div>
+              </div>
+            </div>
+
+            {styles.recipientAddress && (
+              <div className="mb-4">
+                <div className="text-xs mb-2 font-bold" style={{ color: styles.primaryColor, opacity: 0.7 }}>RECIPIENT_ADDRESS</div>
+                <div className="w-full text-xs font-mono border-2 rounded px-3 py-2 truncate" style={{
+                  color: styles.primaryColor,
+                  borderColor: `${styles.primaryColor}30`,
+                  backgroundColor: `${styles.primaryColor}05`
+                }}>
+                  {styles.recipientAddress}
+                </div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              <div className="text-xs font-bold" style={{ color: styles.primaryColor, opacity: 0.7 }}>SUPPORTED_TOKENS</div>
+              <div className="grid grid-cols-3 gap-2 text-xs font-mono" style={{ color: styles.primaryColor }}>
+                {['ETH', 'USDC', 'DAI'].map((token) => (
+                  <div key={token} className="rounded border px-3 py-2 text-center" style={{ borderColor: `${styles.primaryColor}30`, backgroundColor: `${styles.primaryColor}07` }}>
+                    {token}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="p-3 rounded-lg border" style={{ backgroundColor: `${styles.primaryColor}15`, borderColor: `${styles.primaryColor}30` }}>
+              <div className="flex items-center justify-between text-xs">
+                <span style={{ color: styles.primaryColor }}>Simulated Route</span>
+                <span className="font-mono" style={{ color: styles.primaryColor, opacity: 0.8 }}>
+                  ETH → ... → {styles.tokenSymbol}
+                </span>
+              </div>
+            </div>
+
+            <Button
+              className={getButtonStyle()}
+              style={{
+                backgroundColor: getButtonBackground(),
+                color: getButtonTextColor(),
+                borderRadius: styles.borderRadius,
+                borderColor: styles.buttonStyle === 'outline' ? styles.primaryColor : 'transparent'
+              }}
+              disabled
+            >
+              Connect Wallet to Pay
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  const { isConnected } = useAccount();
+  const [selectedToken, setSelectedToken] = React.useState<Token | undefined>();
+  const [showSuccessModal, setShowSuccessModal] = React.useState(false);
+
+  // Get token decimals
+  const { data: tokenDecimals } = useReadContract({
+    address: selectedToken?.address,
+    abi: erc20Abi,
+    functionName: 'decimals',
+    query: { enabled: !!selectedToken?.address },
+  });
+
+  // Convert USD to token amount (async)
+  const [tokenAmount, setTokenAmount] = React.useState<string>('0');
+  
+  React.useEffect(() => {
+    if (!selectedToken?.address || !tokenDecimals) {
+      setTokenAmount('0');
+      return;
+    }
+    
+    convertUSDToTokenAmount(amountUSD, selectedToken.address, tokenDecimals)
+      .then(amount => setTokenAmount(amount))
+      .catch(err => {
+        console.error('Price conversion error:', err);
+        setTokenAmount('0');
+      });
+  }, [amountUSD, selectedToken?.address, tokenDecimals]);
+  
+  const { pay, state, path, isPathLoading, canPay } = useGravityPayment(
+    selectedToken?.address,
+    tokenAmount,
+    eventId
+  );
+
+  // Show success modal when payment is complete
+  React.useEffect(() => {
+    if (state.txHash && !state.isPaying && !state.error) {
+      setShowSuccessModal(true);
+    }
+  }, [state.txHash, state.isPaying, state.error]);
+
+  // Reset state when closed
+  React.useEffect(() => {
+    if (!isOpen && !inline) {
+      setSelectedToken(undefined);
+      setShowSuccessModal(false);
+    }
+  }, [isOpen, inline]);
+
+  if (!isOpen && !inline) return null;
 
   const ModalContent = (
     <Card 

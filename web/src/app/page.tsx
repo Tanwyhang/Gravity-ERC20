@@ -7,16 +7,16 @@ import Link from "next/link"
 import { AuroraBackground } from "@/components/ui/shadcn-io/aurora-background"
 import { QrScanAnimation } from "@/components/QrScanAnimation"
 import { LaptopClickAnimation } from "@/components/LaptopClickAnimation"
-import { ConnectButton } from "@rainbow-me/rainbowkit"
 import { IntroAnimation } from "@/components/IntroAnimation"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { useAccount } from "wagmi"
 import { useRef } from "react"
 import { paymentThemes, generatePaymentUrl } from "@/lib/themes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { PaymentModal, PaymentModalConfig } from "@/components/PaymentModal"
 import { QRCode } from "@/components/ui/shadcn-io/qr-code"
+import { WalletConnectButton } from "@/components/WalletConnectButton"
+import { useAccount } from 'wagmi'
 
 export default function Home() {
   const { isConnected } = useAccount()
@@ -26,10 +26,10 @@ export default function Home() {
     offset: ["start end", "end start"]
   })
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -200])
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, 150])
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -100])
-  const y4 = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const y1 = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const y2 = useTransform(scrollYProgress, [0, 1], [0, 800])
+  const y3 = useTransform(scrollYProgress, [0, 1], [0, 200])
+  const y4 = useTransform(scrollYProgress, [0, 1], [0, 700])
 
   const demoPaymentUrl = "http://localhost:3000/pay/kslwjq2?primaryColor=%23360740&backgroundColor=%23ff85c2&textColor=%23000000&borderColor=%2399ceff&borderRadius=12&buttonStyle=solid&tokenSymbol=ETH&tokenAmount=0.0402&merchantName=GRAVITY_PAY&transactionId=%23DEMO123&customTitle=DEMO+PAYMENT&recipientAddress=0x0ce3580766DcdDAf281DcCE968885A989E9B0e99&showTransactionId=true&animation=pulse&usdAmount=99.99&customThumbnail=https%3A%2F%2Fmwtzwo37egeya3fd.public.blob.vercel-storage.com%2Fkaiju-kingz-kaiju-V0KhO0S4xMTwH4f8EkymjqgO9R0Mrg.gif";
 
@@ -98,12 +98,13 @@ export default function Home() {
             <span>GRAVITY-ERC20-PAYMENT</span>
           </div>
           <nav className="hidden md:flex gap-12 text-sm ml-auto mr-12">
+            <Link href="/dashboard" className="hover:underline decoration-2 underline-offset-4 font-bold text-primary">./dashboard</Link>
             <a href="#about" className="hover:underline decoration-2 underline-offset-4">./about</a>
             <a href="#features" className="hover:underline decoration-2 underline-offset-4">./features</a>
             <a href="#testimonials" className="hover:underline decoration-2 underline-offset-4">./testimonials</a>
           </nav>
           <div className="flex items-center gap-4">
-            <ConnectButton />
+            <WalletConnectButton />
             <div className="text-xs text-muted-foreground hidden sm:block">
               v1.0.0-beta
             </div>
@@ -193,7 +194,7 @@ export default function Home() {
               <motion.div style={{ y: y2 }} className="absolute -right-40 top-20 z-30 w-[600px] h-[600px] pointer-events-none opacity-90 hidden lg:block backdrop-invert bg-white/30 brightness-125 [mask-image:url(/shapestar.png)] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]">
                   <Image src="/shapestar.png" alt="" fill className="object-contain opacity-60" />
               </motion.div>
-              <motion.div style={{ y: y3 }} className="absolute -left-40 bottom-100 z-30 w-[450px] h-[450px] pointer-events-none opacity-80 hidden lg:block backdrop-invert bg-white/30 brightness-125 [mask-image:url(/shapetube.png)] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]">
+              <motion.div style={{ y: y3 }} className="absolute -left-40 bottom-150 z-30 w-[450px] h-[450px] pointer-events-none opacity-80 hidden lg:block backdrop-invert bg-white/30 brightness-125 [mask-image:url(/shapetube.png)] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]">
                   <Image src="/shapetube.png" alt="" fill className="object-contain opacity-60" />
               </motion.div>
               <motion.div style={{ y: y4 }} className="absolute right-0 -top-40 z-10 w-[400px] h-[400px] pointer-events-none opacity-80 hidden lg:block backdrop-invert bg-white/30 brightness-125 [mask-image:url(/shapespring.png)] [mask-size:contain] [mask-repeat:no-repeat] [mask-position:center]">

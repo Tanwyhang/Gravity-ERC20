@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import { useAccount } from "wagmi"
-import { Upload, Eye, ArrowLeft, Copy } from "lucide-react"
+import { Upload, Eye, ArrowLeft, Copy, Download } from "lucide-react"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
 import { Slider } from "@/components/ui/slider"
 import { AspectRatio } from "@/components/ui/aspect-ratio"
@@ -47,6 +47,7 @@ export default function CustomThumbnailPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false)
   const [generatedLink, setGeneratedLink] = useState<string | null>(null)
   const qrCodeRef = useRef<HTMLDivElement>(null)
+  const linkQrCodeRef = useRef<HTMLDivElement>(null)
   const { address } = useAccount()
 
   const [config, setConfig] = useState<PaymentConfig>({
@@ -225,6 +226,57 @@ export default function CustomThumbnailPage() {
     setGeneratedLink(link)
     toast.success("Payment link generated!")
   }, [config])
+
+  const handleDownloadLinkQR = useCallback(() => {
+    if (linkQrCodeRef.current) {
+      const svgElement = linkQrCodeRef.current.querySelector('svg');
+      if (svgElement) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+        const img = new Image();
+        
+        img.onload = () => {
+          // Set canvas size (add some padding)
+          const padding = 40;
+          const size = 500;
+          canvas.width = size;
+          canvas.height = size;
+
+          // Fill white background
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Draw QR code centered
+          ctx.drawImage(img, padding, padding, size - (padding * 2), size - (padding * 2));
+          
+          // Add text at bottom
+          ctx.fillStyle = '#000000';
+          ctx.font = 'bold 20px monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('SCAN TO PAY', canvas.width / 2, canvas.height - 15);
+
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const url = URL.createObjectURL(blob);
+              const downloadLink = document.createElement('a');
+              downloadLink.href = url;
+              downloadLink.download = `gravity-payment-link.png`;
+              document.body.appendChild(downloadLink);
+              downloadLink.click();
+              document.body.removeChild(downloadLink);
+              URL.revokeObjectURL(url);
+              toast.success("QR Code downloaded!");
+            }
+          }, 'image/png');
+        };
+
+        img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+      }
+    }
+  }, []);
 
   const PaymentModalPreview = useMemo(() => {
     const getButtonStyle = () => {
@@ -817,7 +869,7 @@ export default function CustomThumbnailPage() {
         )}
         {generatedLink && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-background border border-border p-6 rounded-xl shadow-2xl max-w-md w-full space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="bg-background border border-border p-6 rounded-xl shadow-2xl max-w-md w-full space-y-6 animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
               <div className="text-center space-y-2">
                 <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Copy className="w-6 h-6 text-primary" />
@@ -826,6 +878,19 @@ export default function CustomThumbnailPage() {
                 <p className="text-sm text-muted-foreground">
                   Your payment link has been generated successfully.
                 </p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center gap-4 py-4 border-y border-border/50">
+                <div className="bg-white p-4 rounded-xl shadow-sm" ref={linkQrCodeRef}>
+                  <QRCode
+                    data={generatedLink}
+                    className="w-48 h-48"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={handleDownloadLinkQR} className="w-full max-w-[200px]">
+                  <Download className="w-4 h-4 mr-2" />
+                  DOWNLOAD_QR
+                </Button>
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg border border-border break-all font-mono text-sm text-center select-all">

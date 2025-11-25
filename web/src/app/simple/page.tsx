@@ -222,8 +222,9 @@ export default function SimplePage() {
       params.append('th', config.customThumbnail);
     }
 
-    const baseUrl = window.location.origin;
-    const link = `${baseUrl}/pay/${uniqueId}?${params.toString()}`
+    // Extract origin from window.location but remove any path
+    const origin = process.env.NEXT_PUBLIC_APP_URL || window.location.origin.replace(/\/create.*$/, '');
+    const link = `${origin}/pay/${uniqueId}?${params.toString()}`
     setGeneratedLink(link)
     toast.success("Payment link generated!")
   }, [config])
@@ -499,7 +500,7 @@ export default function SimplePage() {
       <header className="border-b border-border p-3 md:p-4 sticky top-0 bg-background/80 backdrop-blur-sm z-50">
         <div className="container mx-auto flex items-center">
           <Link
-            href="/create"
+            href="/"
             className="flex items-center gap-2 text-xs md:text-sm hover:text-foreground/70 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -631,7 +632,7 @@ export default function SimplePage() {
                         />
                       </div>
                       </div>
-                      
+
                       <div className="flex items-center justify-between gap-4 p-4">
                         <div className="flex flex-col gap-1">
                           <Label className="font-medium">MERCHANT_LOGO</Label>
@@ -647,8 +648,8 @@ export default function SimplePage() {
                             accept="image/*,.gif"
                             onChange={handleFileUpload}
                           />
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             size="sm"
                             onClick={() => fileInputRef.current?.click()}
                             disabled={isUploading}
@@ -670,7 +671,7 @@ export default function SimplePage() {
                       </div>
                     </div>
 
-              <Button 
+              <Button
                 className="w-full py-6 text-lg font-bold mt-6 shadow-xl hover:scale-[1.02] transition-transform"
                 onClick={handleGenerateLink}
               >

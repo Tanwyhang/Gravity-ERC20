@@ -150,8 +150,8 @@ export function useLiFiPayment(
       // Specific error handling
       if (error.message?.includes('User rejected')) {
         errorMessage = 'Transaction was rejected';
-      } else if (error.message?.includes('insufficient funds')) {
-        errorMessage = 'Insufficient funds for this transaction';
+      } else if (error.message?.includes('insufficient funds') || error.message?.includes('balance is too low')) {
+        errorMessage = 'Insufficient funds. Please check your token balance.';
       } else if (error.message?.includes('gas')) {
         errorMessage = 'Gas estimation failed. Please try a smaller amount.';
       } else if (error.message) {

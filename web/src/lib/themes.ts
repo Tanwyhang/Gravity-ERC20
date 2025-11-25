@@ -17,6 +17,7 @@ export interface PaymentTheme {
     showTransactionId?: boolean;
     animation?: 'none' | 'pulse' | 'bounce' | 'glow';
     customThumbnail?: string;
+    usdAmount?: string;
   };
 }
 
@@ -174,6 +175,7 @@ export function parseUrlThemeParams(searchParams: URLSearchParams): Partial<Paym
     st: 'showTransactionId',
     an: 'animation',
     th: 'customThumbnail',
+    ua: 'usdAmount',
     // Long names (backward compatibility)
     primaryColor: 'primaryColor',
     backgroundColor: 'backgroundColor',
@@ -189,7 +191,8 @@ export function parseUrlThemeParams(searchParams: URLSearchParams): Partial<Paym
     recipientAddress: 'recipientAddress',
     showTransactionId: 'showTransactionId',
     animation: 'animation',
-    customThumbnail: 'customThumbnail'
+    customThumbnail: 'customThumbnail',
+    usdAmount: 'usdAmount'
   };
 
   Object.entries(paramMapping).forEach(([param, configKey]) => {

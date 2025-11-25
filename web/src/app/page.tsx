@@ -30,8 +30,7 @@ export default function Home() {
   const y3 = useTransform(scrollYProgress, [0, 1], [0, 200])
   const y4 = useTransform(scrollYProgress, [0, 1], [0, 700])
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const demoPaymentUrl = `${baseUrl}/pay/kslwjq2?primaryColor=%23360740&backgroundColor=%23ff85c2&textColor=%23000000&borderColor=%2399ceff&borderRadius=12&buttonStyle=solid&tokenSymbol=ETH&tokenAmount=0.0402&merchantName=GRAVITY_PAY&transactionId=%23DEMO123&customTitle=DEMO+PAYMENT&recipientAddress=0x0ce3580766DcdDAf281DcCE968885A989E9B0e99&showTransactionId=true&animation=pulse&usdAmount=99.99&customThumbnail=https%3A%2F%2Fmwtzwo37egeya3fd.public.blob.vercel-storage.com%2Fkaiju-kingz-kaiju-V0KhO0S4xMTwH4f8EkymjqgO9R0Mrg.gif`;
+  const demoPaymentUrl = "https://gravity-mnee.vercel.app/pay/vlftnqm?pc=%230101fe&bg=%23fbf1e6&tc=%23000000&bc=%230101fe&br=12&bs=solid&ts=ETH&ta=401.6060&mn=GRAVITY_PAY&ti=%23DEMO123&ct=PAY_WITH_CRYPTO&ra=0xdf0BaFEe53Fd2A5a7dF8bA31763d2E6963381e64&st=true&an=pulse&ua=999999&th=https%3A%2F%2Fmwtzwo37egeya3fd.public.blob.vercel-storage.com%2Fbg-IAWQjd3lCjlaZvgFOcnBExt0jhlzOj.jpeg";
 
   const modalConfigsWithThumbnail: PaymentModalConfig[] = [
     {

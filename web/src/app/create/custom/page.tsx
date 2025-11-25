@@ -223,7 +223,7 @@ export default function CustomThumbnailPage() {
     if (config.customThumbnail) {
       params.append('th', config.customThumbnail);
     }
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+    const baseUrl = window.location.origin;
     const link = `${baseUrl}/pay/${uniqueId}?${params.toString()}`
     setGeneratedLink(link)
     toast.success("Payment link generated!")

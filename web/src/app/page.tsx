@@ -10,9 +10,8 @@ import { LaptopClickAnimation } from "@/components/LaptopClickAnimation"
 import { IntroAnimation } from "@/components/IntroAnimation"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { useRef } from "react"
-import { paymentThemes, generatePaymentUrl } from "@/lib/themes"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { PaymentModal, PaymentModalConfig } from "@/components/PaymentModal"
 import { QRCode } from "@/components/ui/shadcn-io/qr-code"
 import { WalletConnectButton } from "@/components/WalletConnectButton"
@@ -142,11 +141,11 @@ export default function Home() {
               <motion.div whileHover={isConnected ? { scale: 1.05 } : {}} whileTap={isConnected ? { scale: 0.95 } : {}}>
                 {isConnected ? (
                   <Link href="/create" className="bg-foreground text-background px-8 py-3 text-sm font-bold hover:bg-foreground/90 transition-colors inline-block text-center shadow-lg hover:shadow-xl">
-                    [ LAUNCH_KERNEL ]
+                    [ CREATE ]
                   </Link>
                 ) : (
                   <button disabled className="bg-foreground/50 text-background/50 px-8 py-3 text-sm font-bold cursor-not-allowed inline-block text-center shadow-none">
-                    [ LAUNCH_KERNEL ]
+                    [ CREATE ]
                   </button>
                 )}
               </motion.div>
@@ -155,7 +154,7 @@ export default function Home() {
                 whileTap={{ scale: 0.95 }}
                 className="border border-border px-8 py-3 text-sm font-bold hover:bg-muted/50 transition-colors shadow-sm hover:shadow-md bg-background"
               >
-                [ TECH_SPEC_402 ]
+                [ WHITE_PAPER.pdf ]
               </motion.button>
             </div>
 
@@ -327,8 +326,6 @@ export default function Home() {
                  <LaptopClickAnimation />
                </div>
             </div>
-          
-        
 
         {/* Features Grid */}
 
@@ -356,18 +353,22 @@ export default function Home() {
                 icon: Zap
               }
             ].map((feature, i) => (
-              <div key={i} className="border border-border p-12 space-y-4 hover:bg-muted/30 transition-colors">
-                <div className="flex items-start gap-4">
-                  <feature.icon className="h-6 w-6 mt-1 flex-shrink-0" />
-                  <div className="flex-1">
-                    <div className="text-xs text-muted-foreground mb-2">MODULE_0{i + 1}</div>
-                    <h3 className="text-lg font-bold">{feature.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mt-2">
-                      {feature.desc}
-                    </p>
+              <Card key={i} className="border border-border p-0 hover:shadow-lg transition-all duration-300 group hover:border-foreground/20 overflow-hidden">
+                <CardContent className="p-8 space-y-4">
+                  <div className="flex items-start gap-4">
+                    <div className="p-3 rounded-lg bg-muted/30 group-hover:bg-muted/50 transition-colors">
+                      <feature.icon className="h-6 w-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="text-xs text-muted-foreground mb-2 font-mono">MODULE_0{i + 1}</div>
+                      <h3 className="text-lg font-bold">{feature.title}</h3>
+                      <p className="text-muted-foreground text-sm leading-relaxed mt-2">
+                        {feature.desc}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
         </section>
@@ -491,18 +492,23 @@ export default function Home() {
                   </p>
                   
                   <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                    <button className="group/btn relative px-8 py-4 bg-black text-white rounded-xl font-bold overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20">
-                      <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-blue-500 opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300" />
+                    <Button
+                      className="group/btn relative px-8 py-4 bg-black text-white rounded-xl font-bold overflow-hidden transition-all hover:scale-105 hover:shadow-xl hover:shadow-blue-500/20 hover:bg-gradient-to-r hover:from-blue-600 hover:to-blue-500"
+                      onClick={() => window.location.href = '/create'}
+                    >
                       <span className="relative flex items-center gap-2">
                         [ LAUNCH_MAINNET ]
                         <Zap className="w-4 h-4" />
                       </span>
-                    </button>
-                    
-                    <button className="px-8 py-4 bg-white/50 border border-white/40 text-black rounded-xl font-bold hover:bg-white/80 transition-all hover:scale-105 backdrop-blur-sm flex items-center gap-2">
+                    </Button>
+
+                    <Button
+                      variant="outline"
+                      className="px-8 py-4 bg-white/50 border border-white/40 text-black rounded-xl font-bold hover:bg-white/80 transition-all hover:scale-105 backdrop-blur-sm flex items-center gap-2"
+                    >
                       <span>READ_DOCS.md</span>
                       <ExternalLink className="w-4 h-4" />
-                    </button>
+                    </Button>
                   </div>
                 </div>
               </div>

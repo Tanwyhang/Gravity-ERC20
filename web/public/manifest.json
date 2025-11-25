@@ -1,0 +1,17 @@
+{
+  "name": "Gravity",
+  "short_name": "Gravity",
+  "description": "Web3 Payment & Verification App - Universal QR Crypto Payments for Everyone",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#243370",
+  "icons": [
+    {
+      "src": "/logoWhite.png",
+      "sizes": "500x500",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

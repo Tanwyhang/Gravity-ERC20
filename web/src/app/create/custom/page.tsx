@@ -919,9 +919,9 @@ export default function CustomThumbnailPage() {
                 }}>
                   COPY_LINK
                 </Button>
-                <Link href={generatedLink} target="_blank" className="w-full">
+                <a href={generatedLink} target="_blank" rel="noopener noreferrer" className="w-full">
                   <Button className="w-full">OPEN_PAGE</Button>
-                </Link>
+                </a>
               </div>
 
 

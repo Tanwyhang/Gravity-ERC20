@@ -149,12 +149,13 @@ export default function Home() {
                   </button>
                 )}
               </motion.div>
-              <motion.button 
-                whileHover={{ scale: 1.05 }} 
+              <motion.button
+                whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={() => window.open("https://tanwyhang.github.io/Gravity-LiFi-MNEE/WHITE_PAPER.html", "_blank")}
                 className="border border-border px-8 py-3 text-sm font-bold hover:bg-muted/50 transition-colors shadow-sm hover:shadow-md bg-background"
               >
-                [ WHITE_PAPER.pdf ]
+                [ WHITE_PAPER ]
               </motion.button>
             </div>
 

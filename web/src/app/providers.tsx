@@ -10,11 +10,17 @@ import {
 } from "@tanstack/react-query";
 import { WagmiProvider } from 'wagmi';
 import { config } from '@/config/wagmi';
-import '@/lib/lifi'; // Initialize LiFi config
 import '@rainbow-me/rainbowkit/styles.css';
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = React.useState(() => new QueryClient());
+  
+  // Initialize LiFi config only on client-side
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      import('@/lib/lifi').catch(console.error);
+    }
+  }, []);
   
   return (
     <WagmiProvider config={config}>

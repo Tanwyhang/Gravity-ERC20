@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useMemo } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useAccount } from "wagmi";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { QRCode } from "@/components/ui/shadcn-io/qr-code";
 import { QRDownload } from "@/components/ui/qr-download";
+import PixelBlast from "@/components/PixelBlast";
 
 interface PaymentLink {
   id: string;
@@ -29,32 +30,80 @@ export function PaymentsTab() {
   const { address } = useAccount();
   const [links, setLinks] = useState<PaymentLink[]>([]);
   const [selectedQrLink, setSelectedQrLink] = useState<PaymentLink | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const qrCodeRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const loadLinks = () => {
+    const loadLinks = async () => {
+      if (!address) {
+        setLinks([]);
+        setIsLoading(false);
+        return;
+      }
+
       try {
-        const storedLinks = localStorage.getItem('createdPaymentLinks');
-        if (storedLinks) {
-          setLinks(JSON.parse(storedLinks));
+        setIsLoading(true);
+        const { supabase } = await import('@/lib/supabase');
+        
+        const { data, error } = await supabase
+          .from('payment_links')
+          .select('*')
+          .eq('creator_address', address.toLowerCase())
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error('Error loading payment links:', error);
+          toast.error('Failed to load payment links');
+          setLinks([]);
+        } else {
+          // Transform database format to component format
+          const transformedLinks: PaymentLink[] = (data || []).map((dbLink) => ({
+            id: dbLink.id,
+            url: dbLink.url,
+            createdAt: dbLink.created_at,
+            creatorAddress: dbLink.creator_address,
+            config: {
+              tokenSymbol: dbLink.token_symbol,
+              usdAmount: dbLink.usd_amount,
+              merchantName: dbLink.merchant_name,
+              customTitle: dbLink.custom_title,
+            },
+            totalEarnings: Number(dbLink.total_earnings) || 0,
+          }));
+          setLinks(transformedLinks);
         }
       } catch (error) {
-        console.error("Failed to load payment links", error);
+        console.error('Failed to load payment links:', error);
+        toast.error('Failed to connect to database');
+        setLinks([]);
+      } finally {
+        setIsLoading(false);
       }
     };
 
     loadLinks();
-    
-    // Listen for storage events to update real-time if changed in another tab
-    window.addEventListener('storage', loadLinks);
-    return () => window.removeEventListener('storage', loadLinks);
-  }, []);
+  }, [address]);
 
-  const handleDelete = (id: string) => {
-    const updatedLinks = links.filter(link => link.id !== id);
-    setLinks(updatedLinks);
-    localStorage.setItem('createdPaymentLinks', JSON.stringify(updatedLinks));
-    toast.success("Payment link removed from history");
+  const handleDelete = async (id: string) => {
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      
+      const { error } = await supabase
+        .from('payment_links')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Error deleting payment link:', error);
+        toast.error('Failed to delete payment link');
+      } else {
+        setLinks(links.filter(link => link.id !== id));
+        toast.success('Payment link deleted');
+      }
+    } catch (error) {
+      console.error('Failed to delete payment link:', error);
+      toast.error('Failed to delete payment link');
+    }
   };
 
   const copyToClipboard = (text: string) => {
@@ -62,36 +111,37 @@ export function PaymentsTab() {
     toast.success("Link copied to clipboard");
   };
 
-  const filteredLinks = useMemo(() => {
-    if (!address) return [];
-    return links.filter(link => 
-      link.creatorAddress && link.creatorAddress.toLowerCase() === address.toLowerCase()
-    );
-  }, [links, address]);
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-medium">Your Payment Links</h3>
-
+        <Link href="/create">
+          <Button>Create New Link</Button>
+        </Link>
       </div>
 
 
 
-      {filteredLinks.length === 0 ? (
+      {isLoading ? (
+        <Card>
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <p className="text-muted-foreground text-center">Loading payment links...</p>
+          </CardContent>
+        </Card>
+      ) : links.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12 space-y-4">
             <p className="text-muted-foreground text-center">No payment links created yet.</p>
-            <Link href="/create">
-              <Button>Create New Link</Button>
-            </Link>
           </CardContent>
         </Card>
       ) : (
         <div className="grid gap-4">
-          {filteredLinks.slice(0, 5).map((link) => (
-            <Card key={link.id} className="overflow-hidden">
-              <CardContent className="p-0">
+          {links.slice(0, 5).map((link) => (
+            <Card key={link.id} className="overflow-hidden relative group">
+              <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <PixelBlast pixelSize={4} pixelSizeJitter={0.5} color="#8A2BE2" patternScale={0.4} />
+              </div>
+              <CardContent className="p-0 relative z-10">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 gap-4">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -151,8 +201,6 @@ export function PaymentsTab() {
                  <QRCode
                    data={selectedQrLink.url}
                    size={200}
-                   logo="/logo.png"
-                   logoSize={40}
                  />
                )}
             </div>

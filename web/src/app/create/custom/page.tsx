@@ -192,7 +192,7 @@ export default function CustomThumbnailPage() {
     }
   }, [isProcessing])
 
-  const handleGenerateLink = useCallback(() => {
+  const handleGenerateLink = useCallback(async () => {
     const uniqueId = Math.random().toString(36).substring(2, 9)
     // Use shorter param names to reduce QR code complexity
     const params = new URLSearchParams({
@@ -219,8 +219,35 @@ export default function CustomThumbnailPage() {
     const baseUrl = window.location.origin;
     const link = `${baseUrl}/pay/${uniqueId}?${params.toString()}`
     setGeneratedLink(link)
-    toast.success("Payment link generated!")
-  }, [config])
+
+    // Save to Supabase database
+    try {
+      const { supabase } = await import('@/lib/supabase');
+      
+      const { error } = await supabase
+        .from('payment_links')
+        .insert({
+          id: uniqueId,
+          url: link,
+          creator_address: address?.toLowerCase() || '',
+          token_symbol: config.tokenSymbol,
+          usd_amount: config.usdAmount,
+          merchant_name: config.merchantName,
+          custom_title: config.customTitle,
+          total_earnings: 0,
+        });
+
+      if (error) {
+        console.error('Error saving payment link:', error);
+        toast.error('Link generated but failed to save to database');
+      } else {
+        toast.success("Payment link generated and saved!");
+      }
+    } catch (error) {
+      console.error('Failed to save link to database:', error);
+      toast.error('Link generated but failed to save to database');
+    }
+  }, [config, address])
 
   const handleDownloadLinkQR = useCallback(() => {
     if (linkQrCodeRef.current) {
@@ -719,7 +746,7 @@ export default function CustomThumbnailPage() {
               </div>
 
                 <div className="space-y-4 sm:space-y-6">
-                  <div className="sticky top-4 flex flex-col items-center px-2">
+                  <div className="sticky top-4 flex flex-col items-center px-4">
                     <div className="flex items-center gap-2 mb-3 sm:mb-4">
                       <Eye className="w-4 h-4" />
                       <span className="text-sm font-bold">LIVE_PREVIEW</span>

@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo, useRef, useEffect } from "react"
 import { useAccount } from "wagmi"
-import { Eye, ArrowLeft, Copy, X } from "lucide-react"
+import { Eye, ArrowLeft, Copy, X, Download } from "lucide-react"
 import { Slider } from "@/components/ui/slider"
 import { Spinner } from "@/components/ui/shadcn-io/spinner"
 import { QRCode } from "@/components/ui/shadcn-io/qr-code"
@@ -54,6 +54,7 @@ export default function SimplePage() {
   const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const qrCodeRef = useRef<HTMLDivElement>(null)
+  const linkQrCodeRef = useRef<HTMLDivElement>(null)
   const { address } = useAccount()
 
   const [config, setConfig] = useState<PaymentConfig>({
@@ -204,7 +205,7 @@ export default function SimplePage() {
     }
   }
 
-  const handleGenerateLink = useCallback(() => {
+  const handleGenerateLink = useCallback(async () => {
     const uniqueId = Math.random().toString(36).substring(2, 9)
     // Use shorter param names to reduce QR code complexity
     const params = new URLSearchParams({
@@ -233,35 +234,90 @@ export default function SimplePage() {
     const link = `${baseUrl}/pay/${uniqueId}?${params.toString()}`
     setGeneratedLink(link)
 
-    // Save to localStorage for Dashboard
+    // Save to Supabase database
     try {
-      const existingLinksJson = localStorage.getItem('createdPaymentLinks');
-      const existingLinks = existingLinksJson ? JSON.parse(existingLinksJson) : [];
+      const { supabase } = await import('@/lib/supabase');
       
-      const newLink = {
-        id: uniqueId,
-        url: link,
-        createdAt: new Date().toISOString(),
-        creatorAddress: address,
-        config: {
-          ...config,
-          // Store minimal config needed for display
-          tokenSymbol: config.tokenSymbol,
-          usdAmount: config.usdAmount,
-          merchantName: config.merchantName,
-          customTitle: config.customTitle
-        },
-        totalEarnings: 0 // Initial earnings
+      const { error } = await supabase
+        .from('payment_links')
+        .insert({
+          id: uniqueId,
+          url: link,
+          creator_address: address?.toLowerCase() || '',
+          token_symbol: config.tokenSymbol,
+          usd_amount: config.usdAmount,
+          merchant_name: config.merchantName,
+          custom_title: config.customTitle,
+          total_earnings: 0,
+        });
+
+      if (error) {
+        console.error('Error saving payment link:', error);
+        toast.error('Link generated but failed to save to database');
+      } else {
+        toast.success("Payment link generated and saved!");
+      }
+    } catch (error) {
+      console.error('Failed to save link to database:', error);
+      toast.error('Link generated but failed to save to database');
+    }
+  }, [config, address])
+
+  const handleDownloadLinkQR = useCallback(() => {
+    if (linkQrCodeRef.current) {
+      const svgElement = linkQrCodeRef.current.querySelector('svg');
+      const canvasElement = linkQrCodeRef.current.querySelector('canvas');
+
+      const processCanvas = (sourceCanvas: HTMLCanvasElement | HTMLImageElement) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        // Set canvas size (add some padding)
+        const padding = 40;
+        const size = 500;
+        canvas.width = size;
+        canvas.height = size;
+
+        // Fill white background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw QR code centered
+        ctx.drawImage(sourceCanvas, padding, padding, size - (padding * 2), size - (padding * 2));
+        
+        // Add text at bottom
+        ctx.fillStyle = '#000000';
+        ctx.font = 'bold 20px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText('SCAN TO PAY', canvas.width / 2, canvas.height - 15);
+
+        canvas.toBlob((blob) => {
+          if (blob) {
+            const url = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = url;
+            downloadLink.download = `gravity-payment-link.png`;
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(url);
+            toast.success("QR Code downloaded!");
+          }
+        }, 'image/png');
       };
 
-      const updatedLinks = [newLink, ...existingLinks].slice(0, 50); // Keep last 50
-      localStorage.setItem('createdPaymentLinks', JSON.stringify(updatedLinks));
-    } catch (error) {
-      console.error('Failed to save link to history:', error);
+      if (canvasElement) {
+        processCanvas(canvasElement);
+      } else if (svgElement) {
+        const svgData = new XMLSerializer().serializeToString(svgElement);
+        const img = new Image();
+        
+        img.onload = () => processCanvas(img);
+        img.src = 'data:image/svg+xml;base64,' + btoa(svgData);
+      }
     }
-
-    toast.success("Payment link generated!")
-  }, [config, address])
+  }, [])
 
   const PaymentModalPreview = useMemo(() => {
     const getButtonStyle = () => {
@@ -704,7 +760,7 @@ export default function SimplePage() {
               </div>
 
                 <div className="space-y-4 sm:space-y-6">
-                  <div className="sticky top-4 flex flex-col items-center px-2">
+                  <div className="sticky top-4 flex flex-col items-center px-4">
                     <div className="flex items-center gap-2 mb-3 sm:mb-4">
                       <Eye className="w-4 h-4" />
                       <span className="text-sm font-bold">LIVE_PREVIEW</span>
@@ -844,7 +900,7 @@ export default function SimplePage() {
         )}
         {generatedLink && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
-            <div className="bg-background border border-border p-6 rounded-xl shadow-2xl max-w-md w-full space-y-6 animate-in zoom-in-95 duration-300">
+            <div className="bg-background border border-border p-6 rounded-xl shadow-2xl max-w-md w-full space-y-6 animate-in zoom-in-95 duration-300 max-h-[90vh] overflow-y-auto">
               <div className="text-center space-y-2 relative">
                 <Button
                   variant="ghost"
@@ -861,6 +917,19 @@ export default function SimplePage() {
                 <p className="text-sm text-muted-foreground">
                   Your payment link has been generated successfully.
                 </p>
+              </div>
+
+              <div className="flex flex-col items-center justify-center gap-4 py-4 border-y border-border/50">
+                <div className="bg-white p-4 rounded-xl shadow-sm" ref={linkQrCodeRef}>
+                  <QRCode
+                    data={generatedLink}
+                    className="w-48 h-48"
+                  />
+                </div>
+                <Button variant="outline" size="sm" onClick={handleDownloadLinkQR} className="w-full max-w-[200px]">
+                  <Download className="w-4 h-4 mr-2" />
+                  DOWNLOAD_QR
+                </Button>
               </div>
 
               <div className="p-4 bg-muted/50 rounded-lg border border-border break-all font-mono text-sm text-center select-all">

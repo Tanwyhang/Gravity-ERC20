@@ -1,5 +1,27 @@
 import type { NextConfig } from "next";
 
+// Polyfill indexedDB for server-side to prevent WalletConnect errors
+if (typeof globalThis.indexedDB === 'undefined') {
+  // @ts-ignore
+  globalThis.indexedDB = {
+    open: () => ({
+      addEventListener: () => {},
+      removeEventListener: () => {},
+      result: {
+        createObjectStore: () => ({
+          createIndex: () => {},
+        }),
+        transaction: () => ({
+          objectStore: () => ({
+            put: () => ({ onsuccess: () => {}, onerror: () => {} }),
+            get: () => ({ onsuccess: () => {}, onerror: () => {} }),
+          }),
+        }),
+      },
+    } as any),
+  };
+}
+
 const nextConfig: NextConfig = {
   // Exclude server-only packages from being bundled
   serverExternalPackages: [
@@ -36,7 +58,7 @@ const nextConfig: NextConfig = {
       use: 'ignore-loader'
     });
 
-    // Fix MetaMask SDK async-storage dependency
+    // Fix MetaMask SDK async-storage dependency and prevent browser API usage on server
     config.resolve.fallback = {
       ...config.resolve.fallback,
       '@react-native-async-storage/async-storage': false,

@@ -29,12 +29,6 @@ export default function Page() {
 
       {/* Dashboard Content */}
       <main className="flex-1 space-y-8 p-8 pt-6 container mx-auto">
-        {activeTab === 'analytics' && (
-          <div className="flex items-center space-x-2">
-            
-          </div>
-        )}
-
         {/* Tabs */}
         <div className="flex items-center space-x-4 border-b border-border pb-4">
           <Button 
